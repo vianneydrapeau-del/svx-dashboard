@@ -18,7 +18,7 @@ apt-get update || true
 apt-get install -y git python3-pip || true
 
 cd /root
-git clone <URL_DU_REPO_GITHUB> svx-dashboard
+git clone https://github.com/vianneydrapeau-del/svx-dashboard
 cd svx-dashboard
 ./install.sh
 
