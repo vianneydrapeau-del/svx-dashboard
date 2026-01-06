@@ -1,0 +1,5 @@
+Flask==2.2.3
+psutil
+RPi.GPIO
+dht11
+

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SVX Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#0f1a2e;
+      --card2:#0c1628;
+      --text:#e8eefc;
+      --muted:#a9b7d6;
+      --line:rgba(255,255,255,.08);
+      --good:#34d399;
+      --warn:#fbbf24;
+      --bad:#fb7185;
+      --info:#60a5fa;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(96,165,250,.25), transparent 60%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(52,211,153,.18), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:18px 14px 40px;
+    }
+    header{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .title{display:flex; flex-direction:column; gap:4px;}
+    h1{margin:0; font-size:20px; letter-spacing:.2px;}
+    .sub{color:var(--muted); font-size:13px;}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border:1px solid var(--line);
+      border-radius:999px; background:rgba(255,255,255,.03);
+      color:var(--muted); font-size:12px; white-space:nowrap;
+    }
+    .dot{width:8px;height:8px;border-radius:50%; background:var(--warn); box-shadow:0 0 0 4px rgba(251,191,36,.12);}
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px;}
+    @media (max-width: 920px){ .grid{grid-template-columns:1fr;} }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:14px;
+      color:#dbe7ff;
+      font-weight:650;
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between;}
+    .kv{display:flex; flex-direction:column; gap:3px; min-width:140px;}
+    .k{ color:var(--muted); font-size:12px; }
+    .v{ font-size:20px; font-weight:700; letter-spacing:.2px; }
+    .v.small{ font-size:14px; font-weight:650; color:#dbe7ff;}
+
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      font-size:12px; color:var(--muted);
+    }
+    .badge strong{ color:var(--text); font-weight:750; }
+    .badge.on{ border-color: rgba(52,211,153,.35); }
+    .badge.on .miniDot{ background:var(--good); box-shadow:0 0 0 4px rgba(52,211,153,.12); }
+    .badge.off{ border-color: rgba(251,113,133,.35); }
+    .badge.off .miniDot{ background:var(--bad); box-shadow:0 0 0 4px rgba(251,113,133,.12); }
+    .miniDot{ width:8px;height:8px;border-radius:50%; background:var(--warn); }
+
+    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+    button{
+      appearance:none;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      font-weight:700;
+      font-size:13px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
+      user-select:none;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.16); }
+    button:active{ transform: translateY(0px) scale(.99); }
+    button.secondary{ background: rgba(255,255,255,.02); color:var(--muted);}
+    button.good{ border-color: rgba(52,211,153,.35); }
+    button.bad{ border-color: rgba(251,113,133,.35); }
+    button.danger{ border-color: rgba(251,113,133,.5); }
+    button:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+
+    .hr{ height:1px; background:var(--line); margin:12px 0; }
+
+    .meter{
+      width:100%;
+      height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      overflow:hidden;
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(96,165,250,.95), rgba(52,211,153,.85));
+      transition: width .35s ease;
+    }
+    .fill.warn{
+      background: linear-gradient(90deg, rgba(251,191,36,.95), rgba(251,113,133,.85));
+    }
+
+    .twoCols{display:grid; grid-template-columns: 1fr 1fr; gap:12px;}
+    @media (max-width: 560px){ .twoCols{ grid-template-columns: 1fr; } }
+    .muted{ color:var(--muted); font-size:12px; }
+    .footerNote{ margin-top:12px; color:var(--muted); font-size:12px; opacity:.9; }
+    code.inline{
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      padding:2px 6px;
+      border-radius:8px;
+      color:#dbe7ff;
+      font-size:12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>SVXLink Dashboard</h1>
+        <div class="sub">Hotspot / relais • GPIO12 (relais) • DHT GPIO26</div>
+      </div>
+      <div class="pill" id="pill">
+        <span class="dot" id="dot"></span>
+        <span id="pillText">Connexion…</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Colonne gauche -->
+      <div class="card">
+        <h2>
+          Relais & Contrôle
+          <span style="display:flex; gap:10px; align-items:center;">
+            <button class="danger" id="btnReboot" onclick="rebootPi()">Redémarrer</button>
+            <span class="badge off" id="relayBadge"><span class="miniDot"></span> <strong id="relayState">OFF</strong></span>
+          </span>
+        </h2>
+
+        <div class="row">
+          <div class="kv">
+            <div class="k">Mode</div>
+            <div class="v small" id="relayMode">—</div>
+          </div>
+          <div class="kv">
+            <div class="k">Commande manuelle</div>
+            <div class="v small" id="relayManual">—</div>
+          </div>
+          <div class="kv">
+            <div class="k">Dernière mise à jour</div>
+            <div class="v small" id="lastUpdate">—</div>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button class="secondary" id="btnAuto" onclick="setAuto()">AUTO</button>
+          <button class="good" id="btnOn" onclick="manualOn()">MANU ON</button>
+          <button class="bad" id="btnOff" onclick="manualOff()">MANU OFF</button>
+        </div>
+
+        <div class="footerNote">
+          En mode <strong>AUTO</strong> : relais ON si TX &gt; <code class="inline">60s</code>, puis OFF <code class="inline">+30s</code> après fin TX.
+        </div>
+
+        <div class="hr"></div>
+
+        <h2>Temps de parole (aujourd’hui)</h2>
+        <div class="twoCols">
+          <div class="kv">
+            <div class="k">Nombre de TX</div>
+            <div class="v" id="txCount">—</div>
+          </div>
+          <div class="kv">
+            <div class="k">Total</div>
+            <div class="v" id="txTotal">—</div>
+          </div>
+          <div class="kv">
+            <div class="k">Max TX</div>
+            <div class="v" id="txMax">—</div>
+          </div>
+          <div class="kv">
+            <div class="k">Jour</div>
+            <div class="v small" id="txDay">—</div>
+          </div>
+        </div>
+
+        <div class="footerNote" id="toast" style="display:none;"></div>
+      </div>
+
+      <!-- Colonne droite -->
+      <div class="card">
+        <h2>Capteurs & Télémétrie</h2>
+
+        <div class="twoCols">
+          <div class="card" style="background:var(--card2); box-shadow:none;">
+            <h2 style="margin-bottom:8px;">DHT</h2>
+            <div class="row">
+              <div class="kv">
+                <div class="k">Température</div>
+                <div class="v" id="dhtTemp">—</div>
+              </div>
+              <div class="kv">
+                <div class="k">Humidité</div>
+                <div class="v" id="dhtHum">—</div>
+              </div>
+            </div>
+            <div class="muted" id="dhtAge">—</div>
+          </div>
+
+          <div class="card" style="background:var(--card2); box-shadow:none;">
+            <h2 style="margin-bottom:8px;">CPU</h2>
+            <div class="kv" style="min-width:auto;">
+              <div class="k">Temp CPU</div>
+              <div class="v" id="cpuTemp">—</div>
+            </div>
+            <div style="margin-top:10px;">
+              <div class="row" style="margin-bottom:6px;">
+                <div class="k">CPU %</div><div class="k" id="cpuPctLabel">—</div>
+              </div>
+              <div class="meter"><div class="fill" id="cpuFill"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meteo -->
+        <div class="card" style="background:var(--card2); box-shadow:none; margin-top:12px;">
+          <h2 style="margin-bottom:8px;">Météo balisemeteo (ID 5013)</h2>
+          <div class="row">
+            <div class="kv">
+              <div class="k">Vent moyen</div>
+              <div class="v small" id="ffvlAvg">—</div>
+            </div>
+            <div class="kv">
+              <div class="k">Vent maxi</div>
+              <div class="v small" id="ffvlMax">—</div>
+            </div>
+            <div class="kv">
+              <div class="k">Température</div>
+              <div class="v small" id="ffvlTemp">—</div>
+            </div>
+          </div>
+          <div class="muted" id="ffvlTime">—</div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="card" style="background:var(--card2); box-shadow:none;">
+          <h2 style="margin-bottom:10px;">Ressources</h2>
+
+          <div style="margin-bottom:12px;">
+            <div class="row" style="margin-bottom:6px;">
+              <div class="k">RAM %</div><div class="k" id="ramPctLabel">—</div>
+            </div>
+            <div class="meter"><div class="fill" id="ramFill"></div></div>
+          </div>
+
+          <div>
+            <div class="row" style="margin-bottom:6px;">
+              <div class="k">DISK %</div><div class="k" id="diskPctLabel">—</div>
+            </div>
+            <div class="meter"><div class="fill" id="diskFill"></div></div>
+          </div>
+        </div>
+
+        <div class="footerNote" id="apiHint"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
+
